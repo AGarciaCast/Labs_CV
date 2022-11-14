@@ -205,7 +205,7 @@ def medfilt(Image, wheight, wwidth = -1):
 # The filter is high-pass or low-pass depending on whether FTYPE = 'h'
 # or FTYPE = 'l' respectively. If FTYPE is omitted, it is set to 'l'.
 #
-def ideal(Image, cutoff, ftype = 'l'):
+def ideal(Image, cutoff, ftype = 'l', plot_filter=False):
 	[u, v] = np.shape(Image)
 	ur = np.linspace(-u/2, u/2-1, u)/u
 	vr = np.linspace(-v/2, v/2-1, v)/v
@@ -214,6 +214,9 @@ def ideal(Image, cutoff, ftype = 'l'):
 	MTF = np.where(x**2 + y**2 > cutoff2, 0, 1)
 	if ftype == 'h':
 		MTF = 1 - MTF
+  
+	if plot_filter:
+		showgrey(MTF)
 	Filtim = np.real(np.fft.ifft2(np.fft.fftshift(MTF) * np.fft.fft2(Image)))
 	return Filtim
 
