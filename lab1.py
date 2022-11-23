@@ -16,12 +16,12 @@ from fftwave import fftwave
 
 
 def ex1():
-    # fftwave(5, 65)
-    # fftwave(9, 5)
-    # fftwave(17, 9)
-    # fftwave(17, 121)
+    fftwave(5, 65)
+    fftwave(9, 5)
+    fftwave(17, 9)
+    fftwave(17, 121)
     fftwave(5, 1)
-    # fftwave(125, 1)
+    fftwave(125, 1)
 
 def ex2(use_log=True):
     F = np.concatenate([np.zeros((56,128)), np.ones((16,128)), np.zeros((56,128))])
