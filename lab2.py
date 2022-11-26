@@ -96,7 +96,7 @@ def houghline(curves, magnitude, nrho, ntheta,
     acc = np.zeros((nrho, ntheta))
 
     # Define a coordinate system in the accumulator space
-    length_x, length_y = magnitude.shape #magnitude.shape[0] / 2, magnitude.shape[1] / 2
+    length_x, length_y =  magnitude.shape[0] // 2, magnitude.shape[1] // 2
     r = np.sqrt(length_x**2 + length_y**2)
     rho_vals = np.linspace(-r, r, nrho)
     theta_vals = np.linspace(-np.pi/2, np.pi/2, ntheta)
@@ -104,7 +104,7 @@ def houghline(curves, magnitude, nrho, ntheta,
     for edgepoint in zip(curves[0], curves[1]):
         # Check if valid point with respect to threshold
         x, y = edgepoint
-
+        
         # Optionally, keep value from magnitude image
         curve_magnitude = magnitude[x,y]
         if curve_magnitude < threshold:
@@ -114,7 +114,7 @@ def houghline(curves, magnitude, nrho, ntheta,
         for j, theta in enumerate(theta_vals):
 
             # Compute rho for each theta value
-            rho = (x - 0) * np.cos(theta) + (y - 0) * np.sin(theta)
+            rho = (x - length_x) * np.cos(theta) + (y - length_y) * np.sin(theta)
 
             # Compute index values in the accumulator space
             i = np.argmin(abs(rho_vals - rho))
@@ -142,30 +142,35 @@ def houghline(curves, magnitude, nrho, ntheta,
         thetaidxacc = pos[idx, 0]
         rhoidxacc = pos[idx, 1]
 
-    max_theta = theta_vals[thetaidxacc]
-    max_rho = rho_vals[rhoidxacc]
+        max_theta = theta_vals[thetaidxacc]
+        max_rho = rho_vals[rhoidxacc]
 
-    linepar.append([max_theta, max_rho])
+        linepar.append([max_theta, max_rho])
+        
+
+        if verbose:
+            # Compute a line for each one of the strongest responses in the accumulator
+            x0 = max_rho * np.cos(max_theta) + length_x
+            y0 = max_rho * np.sin(max_theta) + length_y
+
+        if abs(np.sin(max_theta)) < 1e3:
+            dx = length_x*(-np.cos(max_theta)/np.sin(max_theta))
+        else: dx = 0
+
+        if abs(np.cos(max_theta)) < 1e3:
+            dy = length_y*(-np.sin(max_theta)/np.cos(max_theta))
+        else: dy = 0
+
+        dx = r * (-np.sin(max_theta))
+        dy = r * (np.cos(max_theta))
+
+        plt.plot([y0-dy, y0, y0+dy], [x0-dx, x0, x0+dx], 'r-')
 
     if verbose:
-        # Compute a line for each one of the strongest responses in the accumulator
-        x0 = max_rho * np.cos(max_theta) + 0
-        y0 = max_rho * np.sin(max_theta) + 0
-
-    if abs(np.sin(max_theta)) < 1e3:
-        dx = length_x*(-np.cos(max_theta)/np.sin(max_theta))
-    else: dx = 0
-
-    if abs(np.cos(max_theta)) < 1e5:
-        dy = length_y*(-np.sin(max_theta)/np.cos(max_theta))
-    else: dy = 0
-
-    dx = r * (-np.sin(max_theta))
-    dy = r * (np.cos(max_theta))
-
-    plt.plot([y0-dy, y0, y0+dy], [x0-dx, x0, x0+dx], 'r-')
-
-    if verbose:
+        plt.show()
+        plt.imshow(acc)
+        plt.ylabel(r"$\rho$")
+        plt.xlabel(r"$\theta$")
         plt.show()
 
     # Return the output data [linepar, acc]
@@ -173,7 +178,11 @@ def houghline(curves, magnitude, nrho, ntheta,
 
 def houghedgeline(pic, scale, gradmagnthreshold, nrho,
                   ntheta, nlines = 20, verbose = False):
+    
     curves = extractedge(pic, scale, gradmagnthreshold, "same")
+    fig = plt.figure()
+    overlaycurves(pic, curves)
+    plt.show()
     gaussianSmooth = discgaussfft(pic, scale)
     gradmagn = Lv(gaussianSmooth, "same")
 
@@ -280,7 +289,7 @@ def ex3():
 def ex4():
 
     imgs = [np.load("Images-npy/few256.npy"),
-    np.load("Images-npy/godthem256.npy")]
+            np.load("Images-npy/godthem256.npy")]
 
     scales = [1.0, 1.5, 2.0, 4.0, 8.0]
     thresholds = [2, 5, 8, 10]
@@ -300,15 +309,15 @@ def ex4():
 
     # best results
     fig = plt.figure()
-    ax = fig.add_subplot(1, 2,1)
-    edgecurves = extractedge(imgs[0], scale=8, threshold=2)
+    ax = fig.add_subplot(1, 2, 1)
+    edgecurves = extractedge(imgs[0], scale=4, threshold=5)
     overlaycurves(imgs[0], edgecurves)
-    ax.set_title(f"t={2}, scale={8}")
+    ax.set_title(f"t={5}, scale={4}")
 
-    ax = fig.add_subplot(1, 2,2 )
-    edgecurves = extractedge(imgs[1], scale=8, threshold=2)
+    ax = fig.add_subplot(1, 2, 2)
+    edgecurves = extractedge(imgs[1], scale=2, threshold=5)
     overlaycurves(imgs[1], edgecurves)
-    ax.set_title(f"t={2}, scale={8}")
+    ax.set_title(f"t={5}, scale={2}")
 
 
     plt.show()
@@ -316,18 +325,25 @@ def ex4():
 def ex5():
     testimage1 = np.load("Images-npy/triangle128.npy")
     smalltest1 = binsubsample(testimage1)
-
+    edgecurves = extractedge(smalltest1, scale=4, threshold=5)
+    print(edgecurves)
     testimage2 = np.load("Images-npy/houghtest256.npy")
     smalltest2 = binsubsample(binsubsample(testimage2))
 
     showgrey(smalltest1)
 
-    linepar, acc = houghedgeline(smalltest1, 1, 20, 400, 300, 20, True)
+    linepar, acc = houghedgeline(smalltest1,
+                                 scale=2,
+                                 gradmagnthreshold=20,
+                                 nrho=100,
+                                 ntheta=100,
+                                 nlines=3,
+                                 verbose=True)
 
 
 if __name__ == '__main__':
 
-    exercise = 4
+    exercise = 5
 
     if exercise==1:
         ex1()
