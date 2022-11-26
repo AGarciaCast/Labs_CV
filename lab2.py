@@ -9,7 +9,9 @@ from gaussfft import gaussfft
 
 def deltax(sobel=False, reduced=False):
     if sobel:
-        return np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
+        return np.array([[1, 0, -1],
+                         [2, 0, -2],
+                         [1, 0, -1]])
     
     if reduced:   
         dxmask = np.array([[1/2, 0, -1/2]])
@@ -20,7 +22,9 @@ def deltax(sobel=False, reduced=False):
 
 def deltay(sobel=False, reduced=False):
     if sobel:
-        return np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+        return np.array([[1,   2,   1],
+                         [0,   0,   0],
+                         [-1, -2,  -1]])
     
     if reduced:   
         dymask = np.array([[1/2, 0, -1/2]]).T
@@ -155,6 +159,7 @@ def houghline(curves, magnitude, nrho, ntheta,
             if abs(np.sin(max_theta)) < 1e3:
                 dx = length_x*(-np.cos(max_theta)/np.sin(max_theta))
             else: dx = 0
+            
             if abs(np.cos(max_theta)) < 1e5:
                 dy = length_y*(-np.sin(max_theta)/np.cos(max_theta))
             else: dy = 0
