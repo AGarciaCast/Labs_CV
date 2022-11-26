@@ -168,9 +168,14 @@ def houghline(curves, magnitude, nrho, ntheta,
 
     if verbose:
         plt.show()
+        fig = plt.figure()
         plt.imshow(acc)
         plt.ylabel(r"$\rho$")
         plt.xlabel(r"$\theta$")
+        plt.xticks(np.linspace(0, len(theta_vals)-1, 5),
+                   np.round(np.linspace(-np.pi/2, np.pi/2, 5), 2))
+        plt.yticks(np.linspace(0, len(rho_vals)-1, 5),
+                   np.round(np.linspace(-r, r, 5), 2))
         plt.show()
 
     # Return the output data [linepar, acc]
