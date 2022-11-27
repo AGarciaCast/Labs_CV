@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 from scipy.special import softmax
 
 from Functions import *
-from gaussfft import gaussfft
-
 
 def deltax(mode="big"):
     if mode == "sobel":
