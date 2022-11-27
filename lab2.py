@@ -409,18 +409,23 @@ if __name__ == '__main__':
     exercise = 6
 
     if exercise==1:
+        # Q1
         ex1()
     elif exercise==2:
+        # Q2, Q3
         ex2("tools", [50, 100, 200, 300, 500], True, None)
         ex2("tools", [50, 100, 120, 200], True, 4)
         ex2("house", [100, 200, 300, 400, 500], True, None)
         ex2("house", [50, 100, 200, 300], True, 2)
         ex2("house", [50, 100, 200, 300], False, 4)
     elif exercise==3:
+        # Q4, Q5, Q6
         ex3()
     elif exercise==4:
+        # Q7, 
         ex4()
     elif exercise==5:
+        # Q8, Q9
         img = "house"
         
         if img=="traingle":
@@ -453,11 +458,12 @@ if __name__ == '__main__':
                 nrho=150, ntheta=100, nlines=20)
             
     elif exercise==6:
-        # ex5("tools", scale=4, gradmagnthreshold=5,
-        #         nrho=200, ntheta=200, nlines=20, soft=True)
+        # Q10
+        ex5("tools", scale=4, gradmagnthreshold=5,
+                nrho=200, ntheta=200, nlines=20, soft=True)
         
-        # ex5("house", scale=2, gradmagnthreshold=5,
-        #         nrho=250, ntheta=200, nlines=30, soft=True)
+        ex5("house", scale=2, gradmagnthreshold=5,
+                nrho=250, ntheta=200, nlines=30, soft=True)
         
         ex5("calc", scale=10, gradmagnthreshold=2,
                 nrho=300, ntheta=150, nlines=25, soft=True)
