@@ -244,7 +244,6 @@ def rawsubsample(inpic):
 def binsubsample(inpic):
 	prefilterrow = np.array([[0.25, 0.50, 0.25]])
 	prefilter = prefilterrow.T @ prefilterrow
-	print(prefilter)
 	presmoothpic = convolve2d(inpic, prefilter, 'same')
 	pixels = rawsubsample(presmoothpic)
 	return pixels
