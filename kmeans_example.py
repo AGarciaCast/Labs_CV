@@ -5,29 +5,30 @@ import matplotlib.pyplot as plt
 from lab3 import kmeans_segm
 from Functions import mean_segments, overlay_bounds
 
-def kmeans_example():
-    K = 10              # number of clusters used
-    L = 50              # number of iterations
-    seed = 14           # seed used for random initialization
-    scale_factor = 0.5  # image downscale factor
-    image_sigma = 1.0   # image preblurring scale
-    
-    img = Image.open('Images-jpg/orange.jpg')
+def kmeans_example(img, K=10, L=50, scale_factor=0.5, image_sigma=1.0,
+                   boundary=True, seed=14):
+
     img = img.resize((int(img.size[0]*scale_factor), int(img.size[1]*scale_factor)))
     
     h = ImageFilter.GaussianBlur(image_sigma)
     I = np.asarray(img.filter(ImageFilter.GaussianBlur(image_sigma))).astype(np.float32)
-    
     segm, centers = kmeans_segm(I, K, L, seed)
     Inew = mean_segments(img, segm)
-    if True:
+    if boundary:
         Inew = overlay_bounds(img, segm)
 
     img = Image.fromarray(Inew.astype(np.ubyte))
     plt.imshow(img)
     plt.axis('off')
     plt.show()
-    img.save('result/kmeans.png')
+    
+    title = "result/kmeans"
+    if boundary:
+        title += "_bound"
+    else:
+        title += "_mean"
+    
+    img.save(title + f'_K_{K}_L_{L}.png')
 
 if __name__ == '__main__':
-    sys.exit(kmeans_example())
+    sys.exit(kmeans_example(boundary=True))
