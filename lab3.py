@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from Functions import *
 from gaussfft import gaussfft
 
+
 def kmeans_segm(image, K, L, seed = 42):
     """
     Implement a function that uses K-means to find cluster 'centers'

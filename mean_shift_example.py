@@ -3,16 +3,16 @@ import math
 import numpy as np
 from PIL import Image, ImageFilter
 import matplotlib.pyplot as plt
-from lab3_orig import kmeans_segm
+from lab3 import kmeans_segm
 from Functions import showgrey, mean_segments, overlay_bounds
 from scipy.ndimage.filters import gaussian_filter
 from scipy.spatial import distance_matrix
 
-def mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations):
-
-    print('Find colour channels with K-means...')
+def mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations, verbose=False):
+    if verbose:
+        print('Find colour channels with K-means...')
     K = 16 # number of channels
-    [ segm, centers ] = kmeans_segm(I, K, 20, 4321)
+    segm, centers, _ = kmeans_segm(I, K, 20, 4321)
     ( height, width, depth ) = np.shape(I)
     idx = np.reshape(segm, (height, width))
     mapsw = np.zeros((height, width, K))
@@ -28,7 +28,8 @@ def mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations):
     mapsx = np.reshape(mapsx, (-1, K))
     mapsy = np.reshape(mapsy, (-1, K))
 
-    print('Search for high density points...')
+    if verbose:
+        print('Search for high density points...')
     constC = -0.5/(colour_bandwidth**2)
     x = np.reshape(X, (width*height, ))
     y = np.reshape(Y, (width*height, ))
@@ -45,7 +46,8 @@ def mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations):
         x = np.maximum(np.minimum(x, width-1), 0);
         y = np.maximum(np.minimum(y, height-1), 0);
 
-    print('Assign high density points to pixels...')
+    if verbose:
+        print('Assign high density points to pixels...')
     XY = np.stack((x, y))
     thr = 4.0
     val = 0
@@ -83,32 +85,44 @@ def mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations):
     return segm
 
 
-def mean_shift_example():
-    scale_factor = 0.5         # image downscale factor
-    image_sigma = 1.0          # image preblurring scale
-    spatial_bandwidth = 10.0   # spatial bandwidth
-    colour_bandwidth = 20.0    # colour bandwidth
-    num_iterations = 40        # number of mean-shift iterations
+def mean_shift_example(img, spatial_bandwidth=10.0, colour_bandwidth=20.0, num_iterations=40,
+                       scale_factor=0.5, image_sigma=1.0, verbose=1):
     
-    img = Image.open('Images-jpg/tiger1.jpg')
+    
     img = img.resize((int(img.size[0]*scale_factor), int(img.size[1]*scale_factor)))
      
     h = ImageFilter.GaussianBlur(image_sigma)
     I = np.asarray(img.filter(ImageFilter.GaussianBlur(image_sigma))).astype(np.float32)
     
-    segm = mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations)
-    Inew = mean_segments(img, segm)
-    if True:
-        Inew = overlay_bounds(img, segm)
+    segm = mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations, verbose=verbose==2)
+    
+    if verbose:
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        
+        Inew = mean_segments(img, segm)
+        img_1 = Image.fromarray(Inew.astype(np.ubyte))
+        ax1.imshow(img_1)
+        ax1.axis('off')
 
-    img = Image.fromarray(Inew.astype(np.ubyte))
-    plt.imshow(img)
-    plt.axis('off')
-    plt.show()
-    img.save('result/meanshift.png')
+        Inew = overlay_bounds(img, segm)
+        img_2 = Image.fromarray(Inew.astype(np.ubyte))
+        ax2.imshow(img_2)
+        ax2.axis('off')
+        
+        plt.suptitle(r"Mean-shift, w/ $\sigma_S$={}, $\sigma_c$={}, iters={}, sf={}, $\sigma_I$={}".format(spatial_bandwidth,
+                                                                                                   colour_bandwidth,
+                                                                                                   num_iterations,
+                                                                                                   scale_factor,image_sigma),
+                     y=0.82)
+        
+        
+        plt.tight_layout()
+        plt.show()
+       
 
 if __name__ == '__main__':
-    sys.exit(mean_shift_example())
+    img = Image.open('Images-jpg/tiger1.jpg')
+    mean_shift_example(img)
 
 
 

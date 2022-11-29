@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from Functions import *
 
 from kmeans_example import *
+from mean_shift_example import *
 
 IMGS = {
         "orange": Image.open('Images-jpg/orange.jpg'),
@@ -33,8 +34,7 @@ def ex1(sel, convergence=False):
         ex1_(convergence, sel, scale_factor=0.2, image_sigma=1.0)
         ex1_(convergence, sel, scale_factor=0.5, image_sigma=5.0)
     
-            
-
+    
 def ex2():
     
     sel="orange"
@@ -43,7 +43,7 @@ def ex2():
         kmeans_example(IMGS[sel], K=k, L=None,
                         scale_factor=1, image_sigma=1.0,
                         verbose=True, seed=seed)
-        
+            
 
 def ex3():
     
@@ -71,10 +71,61 @@ def ex3():
                             scale_factor=1, image_sigma=1.0,
                             boundary=False, verbose=True)
 
+
+def ex4(sel, test=False):
     
+    if test:
+        # kmeans
+        kmeans_example(IMGS[sel], K=16, L=None,
+                       boundary=False, seed=4321)
+        
+        # Testing bandwiths
+    
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=10,
+                        colour_bandwidth=20)
+        
+        # color bandwith
+      
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=10,
+                        colour_bandwidth=3)
+    
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=10,
+                        colour_bandwidth=40)
+        
+        # spatital bandwith
+       
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=3,
+                        colour_bandwidth=20)
+    
+
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=20,
+                        colour_bandwidth=20)
+    
+    elif sel=="orange":
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=35,
+                        colour_bandwidth=8,
+                        num_iterations=100)
+    elif sel=="tiger1":
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=5,
+                        colour_bandwidth=70,
+                        num_iterations=100)
+        
+
+
+
+
+
+
 if __name__ == '__main__':
     
-    exercise = 3
+    exercise = 4
         
     if exercise==1:    
         ex1("orange", convergence=True)
@@ -84,3 +135,8 @@ if __name__ == '__main__':
 
     elif exercise==3:
         ex3()
+    
+    elif exercise==4:
+        # ex4("orange", test=True)
+        # ex4("orange")
+        ex4("tiger1")
