@@ -5,6 +5,7 @@ from Functions import *
 
 from kmeans_example import *
 from mean_shift_example import *
+from norm_cuts_example import *
 
 IMGS = {
         "orange": Image.open('Images-jpg/orange.jpg'),
@@ -119,24 +120,138 @@ def ex4(sel, test=False):
         
 
 
-
+def ex5(sel, test=False):
+    if test:
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=1,
+                        ncuts_thresh=0.10, 
+                        min_area=200, 
+                        max_depth=12)
+        
+        # bandwith
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=8.0,
+                        radius=1,
+                        ncuts_thresh=0.10, 
+                        min_area=200, 
+                        max_depth=12)
+        
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=30.0,
+                        radius=1,
+                        ncuts_thresh=0.10, 
+                        min_area=200, 
+                        max_depth=12)
+        
+        # threshold
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=1,
+                        ncuts_thresh=0.01, 
+                        min_area=200, 
+                        max_depth=12)
+        
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=1,
+                        ncuts_thresh=0.50, 
+                        min_area=200, 
+                        max_depth=12)
+        
+        # area
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=1,
+                        ncuts_thresh=0.10, 
+                        min_area=300, 
+                        max_depth=12)
+        
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=1,
+                        ncuts_thresh=0.10, 
+                        min_area=50, 
+                        max_depth=12)
+        
+        # depth
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=1,
+                        ncuts_thresh=0.10, 
+                        min_area=200, 
+                        max_depth=30)
+        
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=1,
+                        ncuts_thresh=0.10, 
+                        min_area=200, 
+                        max_depth=4)
+        
+    elif sel == "orange":
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=35.0,
+                        radius=3,
+                        ncuts_thresh=0.01, 
+                        min_area=10, 
+                        max_depth=4)
+        
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20.0,
+                        radius=3,
+                        ncuts_thresh=0.03, 
+                        min_area=10, 
+                        max_depth=4)
+    
+    elif sel == "tiger1":
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20,
+                        radius=2,
+                        ncuts_thresh=0.03, 
+                        min_area=10, 
+                        max_depth=6)
+        
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20,
+                        radius=2,
+                        ncuts_thresh=0.03, 
+                        min_area=30, 
+                        max_depth=6)
+        
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=20,
+                        radius=30,
+                        ncuts_thresh=0.1, 
+                        min_area=10, 
+                        max_depth=6)
+  
 
 
 
 if __name__ == '__main__':
     
-    exercise = 4
+    exercise = 5
         
     if exercise==1:    
+        # Q1
         ex1("orange", convergence=True)
 
     elif exercise==2:
+        # Q3
         ex2()
 
     elif exercise==3:
+        # Q4
         ex3()
     
     elif exercise==4:
+        # Q5, Q6
         # ex4("orange", test=True)
         # ex4("orange")
         ex4("tiger1")
+        
+    elif exercise==5:
+        # ex5("orange", test=True)
+        # ex5("orange")
+        ex5("tiger1")

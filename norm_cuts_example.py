@@ -181,10 +181,9 @@ def ncuts_affinity(im, XY_RADIUS, RGB_SIGMA):
     RGB = np.reshape(im/RGB_SIGMA, (-1, 3))
     R = RGB[pair_i,:]
     W = np.exp(-np.sum((RGB[pair_i,:] - RGB[pair_j,:])**2, axis=1)).astype(np.float64)
-    
     # Construct an affinity matrix
     A = sparse.csr_matrix((W, (pair_i, pair_j)), shape=(w*h, w*h))
-
+    
     return A
 
 
@@ -213,32 +212,46 @@ def norm_cuts_segm(I, colour_bandwidth, radius, ncuts_thresh, min_area, max_dept
 
 ############################################
 
-def norm_cuts_example():
-    colour_bandwidth = 20.0  # color bandwidth
-    radius = 1               # maximum neighbourhood distance
-    ncuts_thresh = 0.10      # cutting threshold
-    min_area = 200           # minimum area of segment
-    max_depth = 12           # maximum splitting depth
-    scale_factor = 0.25      # image downscale factor
-    image_sigma = 0.5        # image preblurring scale
+def norm_cuts_example(img, colour_bandwidth=20.0, radius=1, ncuts_thresh=0.10, 
+                      min_area=200, max_depth=12,
+                      scale_factor=0.25, image_sigma=0.5):
+  
 
-    img = Image.open('Images-jpg/tiger1.jpg')
+    
     img = img.resize((int(img.size[0]*scale_factor), int(img.size[1]*scale_factor)))
-     
-    h = ImageFilter.GaussianBlur(image_sigma)
     I = np.asarray(img.filter(ImageFilter.GaussianBlur(image_sigma))).astype(np.float32)
     
     segm = norm_cuts_segm(I, colour_bandwidth, radius, ncuts_thresh, min_area, max_depth)
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+        
     Inew = mean_segments(img, segm)
-    if True:
-        Inew = overlay_bounds(img, segm)
+    img_1 = Image.fromarray(Inew.astype(np.ubyte))
+    ax1.imshow(img_1)
+    ax1.axis('off')
 
-    img = Image.fromarray(Inew.astype(np.ubyte))
-    plt.imshow(img)
-    plt.axis('off')
+    Inew = overlay_bounds(img, segm)
+    img_2 = Image.fromarray(Inew.astype(np.ubyte))
+    ax2.imshow(img_2)
+    ax2.axis('off')
+    title = r"Normalized cut, w/ $\sigma_c$={}, radius={},"\
+            "ncuts_thresh={}, min_area={}, max_depth={}, "\
+            "sf={}, $\sigma_I$={}".format(colour_bandwidth,
+                                          radius,
+                                          ncuts_thresh,
+                                          min_area,
+                                          max_depth,
+                                          scale_factor,
+                                          image_sigma)
+            
+    plt.suptitle(title)
+    
+    
+    plt.tight_layout()
     plt.show()
-    img.save('result/normcuts1.png')
+    
 
 if __name__ == '__main__':
-    sys.exit(norm_cuts_example())
+    img = Image.open('Images-jpg/tiger1.jpg')
+    norm_cuts_example(img)
 
