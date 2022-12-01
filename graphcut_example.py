@@ -8,6 +8,7 @@ from Functions import showgrey, mean_segments, overlay_bounds
 from scipy.ndimage.filters import gaussian_filter
 from scipy.spatial import distance_matrix
 from scipy.signal import convolve2d
+import matplotlib.patches as patches
 
 #   Performing the continuous max-flow algorithm to solve the 
 #   continuous min-cut problem in 2D
@@ -167,6 +168,7 @@ def graphcut_segm(I, area, K, alpha, sigma):
 
     for l in range(3):
         print('Find Gaussian mixture models...')
+        
         fprob = mixture_prob(I, K, 10, mask)
         bprob = mixture_prob(I, K, 10, 1-mask)
         prior = np.reshape(fprob/(fprob + bprob), (h, w))
@@ -180,29 +182,62 @@ def graphcut_segm(I, area, K, alpha, sigma):
 ##############################
 
 
-def graphcut_example():
-    scale_factor = 0.5           # image downscale factor
-    area = [ 80, 110, 570, 300 ] # image region to train foreground with [ minx, miny, maxx, maxy ]
-    K = 16                       # number of mixture components
-    alpha = 8.0                  # maximum edge cost
-    sigma = 20.0                 # edge cost decay factor
+def graphcut_example(img, area, 
+                      K = 16, alpha=8.0, sigma=20.0,
+                      scale_factor=0.5, verbose=True):
 
-    img = Image.open('Images-jpg/tiger1.jpg')
+    # area: image region to train foreground with [ minx, miny, maxx, maxy ]
+    # K: number of mixture components
+    # alpha: maximum edge cost
+    # sigma: edge cost decay factor
+
+    
     img = img.resize((int(img.size[0]*scale_factor), int(img.size[1]*scale_factor)))
 
     area = [ int(i*scale_factor) for i in area ]
     I = np.asarray(img).astype(np.float32)
+    
     segm, prior = graphcut_segm(I, area, K, alpha, sigma)
     
-    Inew = mean_segments(img, segm)
-    if True:
-        Inew = overlay_bounds(img, segm)
+    fig = plt.figure()
+        
+    # Inew = mean_segments(img, segm)
+    # img_1 = Image.fromarray(Inew.astype(np.ubyte))
+    # ax1.imshow(img_1)
+    ax1 = fig.add_subplot(1,2,1)
+    showgrey(prior, False)
+    ax1.set_title("Prior")
+    ax1.axis('off')
 
-    img = Image.fromarray(Inew.astype(np.ubyte))
-    plt.imshow(img)
-    plt.axis('off')
+    Inew = overlay_bounds(img, segm)
+    img_2 = Image.fromarray(Inew.astype(np.ubyte))
+    ax2 = fig.add_subplot(1,2,2)
+    ax2.imshow(img_2)
+    ax2.set_title("Segmentation")
+    # Create a Rectangle patch
+    rect = patches.Rectangle((area[0], area[3]),
+                             area[2]-area[0],
+                             -(area[3]-area[1]),
+                             linewidth=1,
+                             edgecolor='b',
+                             facecolor='none')
+
+    # Add the patch to the Axes
+    ax2.add_patch(rect)
+    ax2.axis('off')
+    title = r"Normalized cut, w/ area={}, K={},"\
+            r"$\alpha$={}, $\sigma$={}, sf={}".format(area,
+                                          K,
+                                          alpha,
+                                          sigma,
+                                          scale_factor)
+            
+    plt.suptitle(title)
+    plt.tight_layout()
+    
     plt.show()
-    img.save('result/graphcut.png')
 
 if __name__ == '__main__':
-    sys.exit(graphcut_example())
+    img = Image.open('Images-jpg/tiger1.jpg')
+    area = [120, 84, 234, 260]
+    sys.exit(graphcut_example(img, area))
