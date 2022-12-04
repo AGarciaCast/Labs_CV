@@ -120,6 +120,18 @@ def ex4(sel, test=False):
                         colour_bandwidth=70,
                         num_iterations=100)
         
+    elif sel=="tiger2":
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=5,
+                        colour_bandwidth=70,
+                        num_iterations=100)
+        
+    elif sel=="tiger3":
+        mean_shift_example(IMGS[sel],
+                        spatial_bandwidth=5,
+                        colour_bandwidth=70,
+                        num_iterations=100)
+        
 
 def ex5(sel, test=False):
     if test:
@@ -226,6 +238,26 @@ def ex5(sel, test=False):
                         ncuts_thresh=0.1, 
                         min_area=10, 
                         max_depth=6)
+        
+        
+    elif sel == "tiger2":
+        norm_cuts_example(IMGS[sel], 
+                            colour_bandwidth=23,
+                            radius=2,
+                            ncuts_thresh=0.1, 
+                            min_area=5, 
+                            max_depth=6)
+            
+        norm_cuts_example(IMGS[sel], 
+                        colour_bandwidth=23,
+                        radius=4,
+                        ncuts_thresh=0.1, 
+                        min_area=5, 
+                        max_depth=6)
+        
+
+        
+
 
 
 def ex6(sel, test=False):
@@ -287,7 +319,7 @@ def ex7(sel):
 
 if __name__ == '__main__':
     
-    exercise = 6
+    exercise = 4
         
     if exercise==1:    
         # Q1
@@ -305,13 +337,17 @@ if __name__ == '__main__':
         # Q5, Q6
         # ex4("orange", test=True)
         # ex4("orange")
-        ex4("tiger1")
+        # ex4("tiger1")
+        # ex4("tiger2")
+        ex4("tiger2")
+        
         
     elif exercise==5:
         # Q7, Q8, Q9, Q10
         # ex5("orange", test=True)
         # ex5("orange")
-        ex5("tiger1")
+        # ex5("tiger1")
+        ex5("tiger2")
     
     elif exercise==6:
         # Q11, Q13
